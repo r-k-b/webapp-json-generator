@@ -53,7 +53,10 @@
                  success: processListOfWebapps,
                  error  : function (webAppItems, xhr) {
                    // handle errors
-                   console.warn('Error retreiving web app collection');
+                   console.group();
+                   console.warn('Error retreiving web app collection. xhr object follows.');
+                   console.log(xhr);
+                   console.groupEnd();
                  }
                });
 
@@ -125,10 +128,17 @@
                              limit  : 100000,
                              success: fetchSubsetofItems,
                              error  : function (jqXHR) {
+                               console.group();
                                console.warn("Request failed. jqXHR object follows.");
-                               console.log(jqXHR)
+                               console.log(jqXHR);
+                               console.groupEnd();
                              }
                            });
+
+      $.when(itemCollection).done(function(){
+        console.log('itemCollection Done...');
+        console.log(itemCollection)
+      });
 
       /*
        *
