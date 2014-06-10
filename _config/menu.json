@@ -1,0 +1,9 @@
+{
+  "menu-first-BOSWEB-WAJSONG": {
+      "weight": 100000,
+      "title": "Webapp JSON Generator",
+      "attr": {
+          "href": "/Admin/AppLoader.aspx?client_id=BOSWEB-WAJSONG"
+      }
+  }
+}

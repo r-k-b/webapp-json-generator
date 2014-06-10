@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="wajsong-angularapp">
+
+<head>
+  <title>Hello world</title>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript"
+          src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+  <script type="text/javascript" src="//cdn.worldsecuresystems.com/bcapi/bcapi-0.1.0.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+  <script type="text/javascript" src="wajsong-controller.js"></script>
+</head>
+
+<body ng-controller="wajsong_general_controller">
+
+  <ul>
+    <li>Identify all webapps (<code>BCAPI.Models.WebApp.AppCollection()</code>)</li>
+    <li>Get all custom fields for each webapp?</li>
+    <li>Retrieve all data, for all fields, for all webapps</li>
+    <li>Save all webapp fields and data to a JSON file, for each webapp.</li>
+  </ul>
+
+  <p><em>Found web apps:</em></p>
+  <p ng-show="foundWebApps.length < 1">None yet...</p>
+  <ol>
+    <li ng-repeat="webapp in foundWebApps">
+      {{webapp.name}} <em>(#{{webapp.id}})</em><span ng-show="foundWebApps.items"> &ndash; {{webapp.items.length}} items</span>
+      <!--TODO: get the item count into the view-->
+    </li>
+  </ol>
+
+  <p><em>Messages:</em></p>
+  <p ng-show="messages.length < 1">None yet...</p>
+  <ol>
+    <li ng-repeat="msg in messages">
+      {{msg}}
+    </li>
+  </ol>
+
+</body>
+</html>
