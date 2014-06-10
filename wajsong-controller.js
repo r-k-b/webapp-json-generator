@@ -6,6 +6,7 @@
 
 (function () {
   BCAPI.Helper.Site.getAccessToken();
+  var itemsFetchedAtOnce = 100;
   var wajsong_app = angular.module('wajsong-angularapp', []);
 
   wajsong_app.controller('wajsong_general_controller', function ($scope) {
@@ -82,6 +83,10 @@
       /*console.log($scope.foundWebApps[webappScopeIndex]);*/
       $scope.foundWebApps[webappScopeIndex].items = [];
 
+      /*
+      * Called by the fetch() on an itemCollection.
+      *
+      * */
       var fetchSubsetofItems = function (items) {
 
         if (itemCollection.length < 1) {
@@ -94,38 +99,53 @@
           var oneLessFetchRemaining = function () {
             itemsToFetch--;
             if (itemsToFetch < 1) {
-              // No more items to fetch; we're ready to work on a complete set.
-              $scope.$apply(function () {
-                /*console.log('Finished fetching webapp "' + webappname + '" items');*/
+              // No more items to fetch in this subset; we're ready to grab the next subset.
 
-                writeJSONfile(webappid, webappname, webappScopeIndex);
-              })
+              // TODO: grab next subset?
             }
           };
-
-          // TODO: check for empty set of items
 
           items.each(function (item) {
             itemsToFetch++;
             item.fetch({
-                         where  : {'name': '*'},
                          success: function (itemDetails) {
                            /*console.log(itemDetails.attributes);*/
                            $scope.foundWebApps[webappScopeIndex].items.push(itemDetails.attributes);
                            oneLessFetchRemaining();
-                         }
+                         },
                          // TODO: catch failure
+                         error  : function () {
+                           console.error('Failure... ')
+                         }
                        });
 
           });
+
+          // TODO: fetch the next bunch of items
+          // ...
+          offset += itemsFetchedAtOnce;
+          postMessage('About to fetch another bunch, at offset ' + offset);
+          itemCollection.fetch({
+                                 // TODO: fetch ALL the items
+                                 skip   : offset,
+                                 limit  : itemsFetchedAtOnce,
+                                 success: fetchSubsetofItems,
+                                 error  : function (jqXHR) {
+                                   console.group();
+                                   console.warn("Request failed. jqXHR object follows.");
+                                   console.log(jqXHR);
+                                   console.groupEnd();
+                                 }
+                               });
         }
       };
 
       var itemCollection = new BCAPI.Models.WebApp.ItemCollection(webappname);
+      var offset = 0;
       itemCollection.fetch({
                              // TODO: fetch ALL the items
                              skip   : 0,
-                             limit  : 100000,
+                             limit  : 100,
                              success: fetchSubsetofItems,
                              error  : function (jqXHR) {
                                console.group();
@@ -134,11 +154,6 @@
                                console.groupEnd();
                              }
                            });
-
-      $.when(itemCollection).done(function(){
-        console.log('itemCollection Done...');
-        console.log(itemCollection)
-      });
 
       /*
        *

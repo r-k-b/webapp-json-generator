@@ -35,7 +35,7 @@
   <p><em>Messages:</em></p>
   <p ng-show="messages.length < 1">None yet...</p>
   <ol>
-    <li ng-repeat="msg in messages">
+    <li ng-repeat="msg in messages track by $index">
       {{msg}}
     </li>
   </ol>
