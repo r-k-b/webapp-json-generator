@@ -79,51 +79,54 @@
       /*console.log($scope.foundWebApps[webappScopeIndex]);*/
       $scope.foundWebApps[webappScopeIndex].items = [];
 
+      var fetchSubsetofItems = function (items) {
+
+        if (itemCollection.length < 1) {
+          postMessage('No items to fetch from app "' + webappname + '"');
+          console.log(itemCollection)
+        } else {
+          /*console.log('Items loaded successfully, here are the details:');*/
+          var itemsToFetch = 0;
+
+          var oneLessFetchRemaining = function () {
+            itemsToFetch--;
+            if (itemsToFetch < 1) {
+              // No more items to fetch; we're ready to work on a complete set.
+              $scope.$apply(function () {
+                /*console.log('Finished fetching webapp "' + webappname + '" items');*/
+
+                writeJSONfile(webappid, webappname, webappScopeIndex);
+              })
+            }
+          };
+
+          // TODO: check for empty set of items
+
+          items.each(function (item) {
+            itemsToFetch++;
+            item.fetch({
+                         where  : {'name': '*'},
+                         success: function (itemDetails) {
+                           /*console.log(itemDetails.attributes);*/
+                           $scope.foundWebApps[webappScopeIndex].items.push(itemDetails.attributes);
+                           oneLessFetchRemaining();
+                         }
+                         // TODO: catch failure
+                       });
+
+          });
+        }
+      };
+
       var itemCollection = new BCAPI.Models.WebApp.ItemCollection(webappname);
       itemCollection.fetch({
                              // TODO: fetch ALL the items
                              skip   : 0,
                              limit  : 100000,
-                             success: function (items) {
-
-                               if (itemCollection.length < 1) {
-                                 postMessage('No items to fetch from app "' + webappname + '"');
-                                 console.log(itemCollection)
-                               } else {
-                                 /*console.log('Items loaded successfully, here are the details:');*/
-                                 var itemsToFetch = 0;
-
-                                 var oneLessFetchRemaining = function () {
-                                   itemsToFetch--;
-                                   if (itemsToFetch < 1) {
-                                     // No more items to fetch; we're ready to work on a complete set.
-                                     $scope.$apply(function () {
-                                       /*console.log('Finished fetching webapp "' + webappname + '" items');*/
-
-                                       writeJSONfile(webappid, webappname, webappScopeIndex);
-                                     })
-                                   }
-                                 };
-
-                                 // TODO: check for empty set of items
-
-                                 items.each(function (item) {
-                                   itemsToFetch++;
-                                   item.fetch({
-                                                where  : {'name': '*'},
-                                                success: function (itemDetails) {
-                                                  /*console.log(itemDetails.attributes);*/
-                                                  $scope.foundWebApps[webappScopeIndex].items.push(itemDetails.attributes);
-                                                  oneLessFetchRemaining();
-                                                }
-                                                // TODO: catch failure
-                                              });
-
-                                 });
-                               }
-                             },
+                             success: fetchSubsetofItems,
                              error  : function (jqXHR) {
-                               console.warn("Request failed.");
+                               console.warn("Request failed. jqXHR object follows.");
+                               console.log(jqXHR)
                              }
                            });
 
