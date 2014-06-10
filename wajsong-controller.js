@@ -85,36 +85,42 @@
                              skip   : 0,
                              limit  : 100000,
                              success: function (items) {
-                               /*console.log('Items loaded successfully, here are the details:');*/
 
-                               var itemsToFetch = 0;
+                               if (itemCollection.length < 1) {
+                                 postMessage('No items to fetch from app "' + webappname + '"');
+                                 console.log(itemCollection)
+                               } else {
+                                 /*console.log('Items loaded successfully, here are the details:');*/
+                                 var itemsToFetch = 0;
 
-                               var oneLessFetchRemaining = function () {
-                                 itemsToFetch--;
-                                 if (itemsToFetch < 1) {
-                                   // No more items to fetch; we're ready to work on a complete set.
-                                   $scope.$apply(function () {
-                                     /*console.log('Finished fetching webapp "' + webappname + '" items');*/
+                                 var oneLessFetchRemaining = function () {
+                                   itemsToFetch--;
+                                   if (itemsToFetch < 1) {
+                                     // No more items to fetch; we're ready to work on a complete set.
+                                     $scope.$apply(function () {
+                                       /*console.log('Finished fetching webapp "' + webappname + '" items');*/
 
-                                     writeJSONfile(webappid, webappname, webappScopeIndex);
-                                   })
-                                 }
-                               };
+                                       writeJSONfile(webappid, webappname, webappScopeIndex);
+                                     })
+                                   }
+                                 };
 
-                               // TODO: check for empty set of items
+                                 // TODO: check for empty set of items
 
-                               items.each(function (item) {
-                                 itemsToFetch++;
-                                 item.fetch({
-                                              where  : {'name': '*'},
-                                              success: function (itemDetails) {
-                                                /*console.log(itemDetails.attributes);*/
-                                                $scope.foundWebApps[webappScopeIndex].items.push(itemDetails.attributes);
-                                                oneLessFetchRemaining();
-                                              }
-                                              // TODO: catch failure
-                                            });
-                               });
+                                 items.each(function (item) {
+                                   itemsToFetch++;
+                                   item.fetch({
+                                                where  : {'name': '*'},
+                                                success: function (itemDetails) {
+                                                  /*console.log(itemDetails.attributes);*/
+                                                  $scope.foundWebApps[webappScopeIndex].items.push(itemDetails.attributes);
+                                                  oneLessFetchRemaining();
+                                                }
+                                                // TODO: catch failure
+                                              });
+
+                                 });
+                               }
                              },
                              error  : function (jqXHR) {
                                console.warn("Request failed.");
