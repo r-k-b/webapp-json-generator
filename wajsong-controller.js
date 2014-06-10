@@ -90,8 +90,12 @@
       var fetchSubsetofItems = function (items) {
 
         if (itemCollection.length < 1) {
-          postMessage('No items to fetch from app "' + webappname + '"');
-          console.log(itemCollection)
+          postMessage('This subset (' + offset + ') is empty.');
+          postMessage('Finished fetching webapp "' + webappname + '" items');
+
+          $scope.$apply(function () {
+            writeJSONfile(webappid, webappname, webappScopeIndex);
+          })
         } else {
           /*console.log('Items loaded successfully, here are the details:');*/
           var itemsToFetch = 0;
